@@ -47,6 +47,5 @@ public:
 	std::vector<std::string> ConvertToStandartForm(const std::vector<std::string>& tokens);
 	std::stringstream ConvertToRPN(std::vector<std::string> tokens);
 
-
 	void Solve(std::string input_expression);
 };
