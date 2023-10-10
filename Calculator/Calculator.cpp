@@ -114,7 +114,7 @@ std::stringstream Calculator::ConvertToRPN(std::vector<std::string> tokens) {
 
 				try {
 					if (operator_stack.empty()) {
-						throw std::string{ "Некорректное выражение: неправильный порядок скобок." };
+						throw std::string{ "Incorrect expression : incorrect parenthesis order or missing parentheses." };
 					}
 					operator_stack.pop();
 				}
@@ -133,7 +133,7 @@ std::stringstream Calculator::ConvertToRPN(std::vector<std::string> tokens) {
 	while (!operator_stack.empty()) {
 		try {
 			if (operator_stack.top() == "(") {
-				throw std::string{ "Некорректное выражение: неправильный порядок скобок." };
+				throw std::string{ "Incorrect expression: incorrect parenthesis order or missing parentheses" };
 			}
 		}
 		catch (const std::string& ex) {
@@ -151,6 +151,6 @@ void Calculator::Solve(std::string input_expression) {
 	std::vector<std::string> tokens = TokenizeExpression(input_expression);
 	std::stringstream rpn_expression = ConvertToRPN(tokens);
 	std::string answer = _core_calculator->Calculate(rpn_expression);
-	std::cout << "Ответ: " << answer << std::endl;
+	std::cout << "Solution: " << answer << std::endl;
 
 }

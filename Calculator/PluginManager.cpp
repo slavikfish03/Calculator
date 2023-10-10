@@ -22,10 +22,11 @@ void PluginManager::LoadingAvailableLibraries() {
 				std::cout << "!plugin" << std::endl;
 				std::exit(2);
 			}
-			if (GetProcAddress(plugin, "name") && GetProcAddress(plugin, "function")) {
+			if (GetProcAddress(plugin, "name") && GetProcAddress(plugin, "function") && GetProcAddress(plugin, "countOperands")) {
 				NameFunc name_function = (NameFunc)GetProcAddress(plugin, "name");
 				TypeFunc function = (TypeFunc)GetProcAddress(plugin, "function");
-				InitializationAvailableFunctions(name_function(), function);
+				CountOperands count_operands = (CountOperands)GetProcAddress(plugin, "countOperands");
+				InitializationAvailableFunctions(name_function(), function, count_operands());
 				std::cout << name_function() << std::endl;;
 				continue;
 			}
@@ -56,8 +57,8 @@ std::string PluginManager::GetPathDLL() {
 	return dll_path;
 }
 
-void PluginManager::InitializationAvailableFunctions(std::string name_function, TypeFunc function) {
-	_available_functions[name_function] = function;
+void PluginManager::InitializationAvailableFunctions(std::string name_function, TypeFunc function, int count_operands) {
+	_available_functions[name_function] = { function, count_operands };
 }
 
 FunctionsMap& PluginManager::GetAvailableFunctions() {

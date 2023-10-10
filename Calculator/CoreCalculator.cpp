@@ -38,11 +38,22 @@ bool CoreCalculator::isNumber(std::string token) {
 	return std::regex_match(token, numberRegex);
 }
 
+std::deque<double> CoreCalculator::BuildArgumentsFunction(int count_operands, std::stack<std::string>& calculating_stack) {
+	std::deque<double> args;
+	double operand;
+	for (int i = 0; i < count_operands; i++) {
+		operand = stod(calculating_stack.top());
+		calculating_stack.pop();
+		args.push_front(operand);
+	}
+	return args;
+}
+
 std::string CoreCalculator::Calculate(std::stringstream& rpn_expression) {
 	std::stack<std::string> calculating_stack;
 	std::string token;
 	
-	if (rpn_expression.str().empty()) return std::string("Ошибка");
+	if (rpn_expression.str().empty()) return std::string("Error");
 
 	while (rpn_expression >> token) {
 		//std::cout << token << std::endl;
@@ -51,20 +62,19 @@ std::string CoreCalculator::Calculate(std::stringstream& rpn_expression) {
 		}
 		else if (isOperator(token)) {
 			// проверка в ядре калькулятора
-			double interim_result;
 			double operand_2 = stod(calculating_stack.top());
 			calculating_stack.pop();
 			double operand_1 = stod(calculating_stack.top());
 			calculating_stack.pop();
-			interim_result = _basic_operators[token](operand_1, operand_2);
+			double interim_result = _basic_operators[token](operand_1, operand_2);
 			calculating_stack.push(std::to_string(interim_result));
 		}
 		else if (isFunction(token)) {
-			double interim_result;
-			double operand = stod(calculating_stack.top());
-			calculating_stack.pop();
-			std::vector<double> args = { operand };
-			interim_result = _available_functions[token](args);
+			int count_operands = _available_functions[token].second;
+
+			std::deque<double> args = BuildArgumentsFunction(count_operands, calculating_stack);
+
+			double interim_result = _available_functions[token].first(args);
 			calculating_stack.push(std::to_string(interim_result));
 		}
 	}

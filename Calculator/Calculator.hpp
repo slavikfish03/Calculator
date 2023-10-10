@@ -8,6 +8,7 @@
 #include <stack>
 #include <vector>
 #include <queue>
+#include <deque>
 #include <map>
 #include <regex>
 #include <exception>
@@ -16,16 +17,15 @@
 #include <memory>
 #include <format>
 
-typedef double (*TypeFunc)(std::vector<double>);
+typedef double (*TypeFunc)(std::deque<double>);
 typedef std::string(*NameFunc)();
-using FunctionsMap = std::map<std::string, TypeFunc>;
+using FunctionsMap = std::map<std::string, std::pair<TypeFunc, int>>;
 
 class Calculator {
 private:
 	std::unique_ptr<CoreCalculator> _core_calculator;
-	//std::vector<std::string> _current_tokens;
 	std::unique_ptr<PluginManager> _plugin_manager;
-	FunctionsMap _available_functions;
+	//FunctionsMap _available_functions;
 
 public:
 	Calculator();
