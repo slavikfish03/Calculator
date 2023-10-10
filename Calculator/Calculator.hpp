@@ -1,20 +1,7 @@
-/*
-класс  алькул€тор
-
-ѕол€:
-	ѕриватные:
-		PluginManager pluginManager - будет загружать dll дл€ калькул€тора
-
-ћетоды:
-	Solve - основной метод, вызыватс€ из main, осуществл€ет решение выражени€
-	ConvertToRPN(string& infix_expression) - метод преобразует из инфиксной нотации в обратную польскую, 
-	возвращает строку с польской нотацией
-	Calculate - вычислитель, вызываетс€ из Solve
-
-*/
 #pragma once
 
 #include "CoreCalculator.hpp"
+#include "PluginManager.hpp"
 
 #include <iostream>
 #include <string>
@@ -29,11 +16,16 @@
 #include <memory>
 #include <format>
 
+typedef double (*TypeFunc)(std::vector<double>);
+typedef std::string(*NameFunc)();
+using FunctionsMap = std::map<std::string, TypeFunc>;
+
 class Calculator {
 private:
 	std::unique_ptr<CoreCalculator> _core_calculator;
 	//std::vector<std::string> _current_tokens;
-	//PluginManager plugin_manager;
+	std::unique_ptr<PluginManager> _plugin_manager;
+	FunctionsMap _available_functions;
 
 public:
 	Calculator();

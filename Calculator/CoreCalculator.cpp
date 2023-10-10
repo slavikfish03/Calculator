@@ -1,6 +1,6 @@
 #include "CoreCalculator.hpp"
 
-CoreCalculator::CoreCalculator() {
+CoreCalculator::CoreCalculator(FunctionsMap& available_functions) {
 	_priority_operations = { {"+", 1}, {"-", 1}, {"*", 2}, {"/", 2} };
 	_left_associativity_operations = { {"+", true}, {"-", true}, {"*", true}, {"/", true} };
 	_basic_operators = {
@@ -9,6 +9,7 @@ CoreCalculator::CoreCalculator() {
 		{"*", [](double x, double y) {return x * y; }},
 		{"/", [](double x, double y) {return x / y; }}
 	};
+	_available_functions = available_functions;
 }
 
 bool CoreCalculator::isOperator(std::string op) {
@@ -24,13 +25,12 @@ bool CoreCalculator::PrioritySecondOpOverFirstOp(std::string op1, std::string op
 }
 
 bool CoreCalculator::isFunction(std::string func) {
-	std::vector<std::string> available_functions = { "sin", "cos" };
-	for (auto function : available_functions) {
-		if (func == function) {
-			return true;
-		}
-	}
-	return false;
+	//for (auto function : _available_functions) {
+	//	if (func == function.first()) {
+	//		return true;
+	//	}
+	//}
+	return (_available_functions.count(func));
 }
 
 bool CoreCalculator::isNumber(std::string token) {
@@ -41,6 +41,8 @@ bool CoreCalculator::isNumber(std::string token) {
 std::string CoreCalculator::Calculate(std::stringstream& rpn_expression) {
 	std::stack<std::string> calculating_stack;
 	std::string token;
+	
+	if (rpn_expression.str().empty()) return std::string("Îøèáêà");
 
 	while (rpn_expression >> token) {
 		//std::cout << token << std::endl;
@@ -57,9 +59,14 @@ std::string CoreCalculator::Calculate(std::stringstream& rpn_expression) {
 			interim_result = _basic_operators[token](operand_1, operand_2);
 			calculating_stack.push(std::to_string(interim_result));
 		}
-		//else if (isFunction(token)) {
-
-		//}
+		else if (isFunction(token)) {
+			double interim_result;
+			double operand = stod(calculating_stack.top());
+			calculating_stack.pop();
+			std::vector<double> args = { operand };
+			interim_result = _available_functions[token](args);
+			calculating_stack.push(std::to_string(interim_result));
+		}
 	}
 
 	return calculating_stack.top();

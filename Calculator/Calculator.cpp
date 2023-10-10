@@ -1,11 +1,16 @@
 #include "Calculator.hpp"
 
 Calculator::Calculator() {
-	_core_calculator = std::make_unique<CoreCalculator>();
+	_plugin_manager = std::make_unique<PluginManager>();
+	
+	FunctionsMap available_functions = _plugin_manager->GetAvailableFunctions();
+
+	_core_calculator = std::make_unique<CoreCalculator>(available_functions);
 }
 
 Calculator::~Calculator() {
 	_core_calculator = nullptr;
+	_plugin_manager = nullptr;
 }
 
 std::vector<std::string> Calculator::TokenizeExpression(std::string input_expression) {
@@ -109,13 +114,13 @@ std::stringstream Calculator::ConvertToRPN(std::vector<std::string> tokens) {
 
 				try {
 					if (operator_stack.empty()) {
-						throw std::string{ "Incorrect expression: missing parenthesis" };
+						throw std::string{ "Некорректное выражение: неправильный порядок скобок." };
 					}
 					operator_stack.pop();
 				}
 				catch (const std::string& ex) {
 					std::cout << ex << std::endl;
-					std::exit(1);
+					return std::stringstream();
 				}
 
 				if (!operator_stack.empty() && _core_calculator->isFunction(operator_stack.top())) {
@@ -128,12 +133,12 @@ std::stringstream Calculator::ConvertToRPN(std::vector<std::string> tokens) {
 	while (!operator_stack.empty()) {
 		try {
 			if (operator_stack.top() == "(") {
-				throw std::string{ "Incorrect expression: missing parenthesis" };
+				throw std::string{ "Некорректное выражение: неправильный порядок скобок." };
 			}
 		}
 		catch (const std::string& ex) {
 			std::cout << ex << std::endl;
-			std::exit(1);
+			return std::stringstream();
 		}
 		output_stringstream << operator_stack.top() + " ";
 		operator_stack.pop();
@@ -146,6 +151,6 @@ void Calculator::Solve(std::string input_expression) {
 	std::vector<std::string> tokens = TokenizeExpression(input_expression);
 	std::stringstream rpn_expression = ConvertToRPN(tokens);
 	std::string answer = _core_calculator->Calculate(rpn_expression);
-	std::cout << "Answer = " << answer << std::endl;
+	std::cout << "Ответ: " << answer << std::endl;
 
 }

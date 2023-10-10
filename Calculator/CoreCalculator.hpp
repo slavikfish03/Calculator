@@ -11,19 +11,23 @@
 #include <sstream>
 #include <functional>
 
+typedef double (*TypeFunc)(std::vector<double>);
+typedef std::string(*NameFunc)();
+
 using PriorityMap = std::map<std::string, int>;
 using AssociativityMap = std::map<std::string, bool>;
 using OperatorsMap = std::map<std::string, std::function<double(double, double)>>;
+using FunctionsMap = std::map<std::string, TypeFunc>;
 
 class CoreCalculator {
 private:
 	PriorityMap _priority_operations;
 	AssociativityMap _left_associativity_operations;
 	OperatorsMap _basic_operators;
-	//available_function
+	FunctionsMap _available_functions;
 
 public:
-	CoreCalculator();
+	CoreCalculator(FunctionsMap& available_functions);
 
 	bool isOperator(std::string op);
 	bool isLeftAssociative(std::string op);

@@ -130,10 +130,12 @@
     <ClCompile Include="Calculator.cpp" />
     <ClCompile Include="CoreCalculator.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PluginManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Calculator.hpp" />
     <ClInclude Include="CoreCalculator.hpp" />
+    <ClInclude Include="PluginManager.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
