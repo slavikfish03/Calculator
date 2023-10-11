@@ -19,7 +19,7 @@
 
 typedef double (*TypeFunc)(std::deque<double>);
 typedef std::string(*NameFunc)();
-using FunctionsMap = std::map<std::string, std::pair<TypeFunc, int>>;
+using FunctionsMap = std::map<std::string, std::tuple<TypeFunc, int, int>>;
 
 class Calculator {
 private:

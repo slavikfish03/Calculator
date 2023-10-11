@@ -1,7 +1,12 @@
 #include "CoreCalculator.hpp"
 
 CoreCalculator::CoreCalculator(FunctionsMap& available_functions) {
+	_available_functions = available_functions;
+
 	_priority_operations = { {"+", 1}, {"-", 1}, {"*", 2}, {"/", 2} };
+	for (const auto& func : _available_functions) {
+		_priority_operations[func.first] = std::get<2>(func.second);
+	}
 	_left_associativity_operations = { {"+", true}, {"-", true}, {"*", true}, {"/", true} };
 	_basic_operators = {
 		{"+", [](double x, double y) {return x + y; }},
@@ -9,7 +14,7 @@ CoreCalculator::CoreCalculator(FunctionsMap& available_functions) {
 		{"*", [](double x, double y) {return x * y; }},
 		{"/", [](double x, double y) {return x / y; }}
 	};
-	_available_functions = available_functions;
+	
 }
 
 bool CoreCalculator::isOperator(std::string op) {
@@ -20,16 +25,11 @@ bool CoreCalculator::isLeftAssociative(std::string token) {
 	return _left_associativity_operations[token];
 }
 
-bool CoreCalculator::PrioritySecondOpOverFirstOp(std::string op1, std::string op2) {
+bool CoreCalculator::PrioritySecondOverFirst(std::string op1, std::string op2) {
 	return _priority_operations[op1] <= _priority_operations[op2];
 }
 
 bool CoreCalculator::isFunction(std::string func) {
-	//for (auto function : _available_functions) {
-	//	if (func == function.first()) {
-	//		return true;
-	//	}
-	//}
 	return (_available_functions.count(func));
 }
 
@@ -70,11 +70,11 @@ std::string CoreCalculator::Calculate(std::stringstream& rpn_expression) {
 			calculating_stack.push(std::to_string(interim_result));
 		}
 		else if (isFunction(token)) {
-			int count_operands = _available_functions[token].second;
+			int count_operands = std::get<1>(_available_functions[token]);
 
 			std::deque<double> args = BuildArgumentsFunction(count_operands, calculating_stack);
 
-			double interim_result = _available_functions[token].first(args);
+			double interim_result = std::get<0>(_available_functions[token])(args);
 			calculating_stack.push(std::to_string(interim_result));
 		}
 	}

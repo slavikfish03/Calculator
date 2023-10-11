@@ -85,16 +85,28 @@ std::stringstream Calculator::ConvertToRPN(std::vector<std::string> tokens) {
 		if (_core_calculator->isNumber(token)) {
 			output_stringstream << token + " ";
 		}
-		else if (_core_calculator->isFunction(token))
-		{
-			operator_stack.push(token);
-		}
+		//else if (_core_calculator->isFunction(token))
+		//{
+		//	//operator_stack.push(token);
+		//		while (
+		//			!operator_stack.empty() &&
+		//			(_core_calculator->isOperator(operator_stack.top()) || _core_calculator->isFunction(operator_stack.top())) &&
+		//			(_core_calculator->PrioritySecondOverFirst(token, operator_stack.top()) ||
+		//				(_core_calculator->GetPriotityOperations()[token] == _core_calculator->GetPriotityOperations()[operator_stack.top()] &&
+		//					_core_calculator->isLeftAssociative(token)
+		//					)))
+		//		{
+		//			output_stringstream << operator_stack.top() + " ";
+		//			operator_stack.pop();
+		//		}
+		//		operator_stack.push(token);
+		//}
 		else {
-			if (_core_calculator->isOperator(token)) {
+			if (_core_calculator->isOperator(token) || _core_calculator->isFunction(token)) {
 				while (
 					!operator_stack.empty() &&
-					_core_calculator->isOperator(operator_stack.top()) &&
-					(_core_calculator->PrioritySecondOpOverFirstOp(token, operator_stack.top()) ||
+					(_core_calculator->isOperator(operator_stack.top()) || _core_calculator->isFunction(operator_stack.top())) &&
+					(_core_calculator->PrioritySecondOverFirst(token, operator_stack.top()) ||
 					(_core_calculator->GetPriotityOperations()[token] == _core_calculator->GetPriotityOperations()[operator_stack.top()] &&
 					_core_calculator->isLeftAssociative(token)))) 
 				{
