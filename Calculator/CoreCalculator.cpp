@@ -4,6 +4,8 @@ CoreCalculator::CoreCalculator(FunctionsMap& available_functions) {
 	_available_functions = available_functions;
 
 	_priority_operations = { {"+", 1}, {"-", 1}, {"*", 2}, {"/", 2} };
+
+	// adding priorities of loaded functions
 	for (const auto& func : _available_functions) {
 		_priority_operations[func.first] = std::get<2>(func.second);
 	}
@@ -56,21 +58,38 @@ std::string CoreCalculator::Calculate(std::stringstream& rpn_expression) {
 	if (rpn_expression.str().empty()) return std::string("Error");
 
 	while (rpn_expression >> token) {
-		//std::cout << token << std::endl;
 		if (isNumber(token)) {
 			calculating_stack.push(token);
 		}
 		else if (isOperator(token)) {
-			// проверка в ядре калькулятора
-			double operand_2 = stod(calculating_stack.top());
-			calculating_stack.pop();
-			double operand_1 = stod(calculating_stack.top());
-			calculating_stack.pop();
-			double interim_result = _basic_operators[token](operand_1, operand_2);
-			calculating_stack.push(std::to_string(interim_result));
+			try {
+				if (calculating_stack.empty() || calculating_stack.size() == 1) {
+					throw std::string{ "Incorrect expression: Function arguments are missing or invalid characters are entered" };
+				}
+				double operand_2 = stod(calculating_stack.top());
+				calculating_stack.pop();
+				double operand_1 = stod(calculating_stack.top());
+				calculating_stack.pop();
+				double interim_result = _basic_operators[token](operand_1, operand_2);
+				calculating_stack.push(std::to_string(interim_result));
+			}
+			catch (const std::string& ex) {
+				std::cout << ex << std::endl;
+				return std::string("Error");
+			}
 		}
 		else if (isFunction(token)) {
 			int count_operands = std::get<1>(_available_functions[token]);
+
+			try {
+				if (calculating_stack.empty()) {
+					throw std::string{ "Incorrect expression: Function arguments are missing or invalid characters are entered" };
+				}
+			}
+			catch (const std::string& ex) {
+				std::cout << ex << std::endl;
+				return std::string("Error");
+			}
 
 			std::deque<double> args = BuildArgumentsFunction(count_operands, calculating_stack);
 
@@ -79,10 +98,20 @@ std::string CoreCalculator::Calculate(std::stringstream& rpn_expression) {
 		}
 	}
 
+	double result = stod(calculating_stack.top());
+	
+	try {
+		if (std::isinf(result) || std::isnan(result)) {
+			throw std::string{ "Incorrect expression: Incorrect value of function arguments or an attempt to divide by zero" };
+		}
+	}
+	catch (const std::string& ex) {
+		std::cout << ex << std::endl;
+		return std::string("Error");
+	}
+
 	return calculating_stack.top();
 }
-
-/////////////////////
 
 PriorityMap& CoreCalculator::GetPriotityOperations() {
 	return _priority_operations;

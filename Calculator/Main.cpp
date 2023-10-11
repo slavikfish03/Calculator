@@ -1,20 +1,6 @@
-﻿#include <iostream>
-#include <string>
-#include <stack>
-#include <vector>
-#include <queue>
-#include <map>
-#include <regex>
-#include <exception>
-#include <sstream>
-#include <functional>
-
-#include "Calculator.hpp"
-#include "CoreCalculator.hpp"
+﻿#include "Calculator.hpp"
 
 int main() {
-
-
 	std::cout << "Enter an expression or type 'Exit' to exit: " << std::endl;
 
 	Calculator calculator;

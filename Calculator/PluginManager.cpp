@@ -12,15 +12,12 @@ void PluginManager::LoadingAvailableLibraries() {
 
 	if (search_handle != INVALID_HANDLE_VALUE) {
 		do {
-			std::cout << search_template + wfd.cFileName << std::endl;
-
 			std::string path_to_current_dll;
 			path_to_current_dll = search_template.substr(0, search_template.find_last_of("\\/") + 1).append(wfd.cFileName);
-			std::cout << path_to_current_dll<< std::endl;
 			HMODULE plugin = LoadLibraryA(path_to_current_dll.c_str());
 			if (!plugin) {
-				std::cout << "!plugin" << std::endl;
-				std::exit(2);
+				std::cout << "System error: Error loading dll libraries (wrong path is specified or the current dll library is not found)" << std::endl;
+				std::exit(1);
 			}
 			if (GetProcAddress(plugin, "name") && GetProcAddress(plugin, "function") && 
 				GetProcAddress(plugin, "countOperands") && GetProcAddress(plugin, "priority")) {
@@ -31,7 +28,6 @@ void PluginManager::LoadingAvailableLibraries() {
 				Priority priority = (Priority)GetProcAddress(plugin, "priority");
 				
 				InitializationAvailableFunctions(name_function(), function, count_operands(), priority());
-				std::cout << name_function() << std::endl;;
 				continue;
 			}
 			FreeLibrary(plugin);
@@ -46,18 +42,8 @@ std::string PluginManager::GetPathDLL() {
 	char buffer[MAX_PATH];
 	GetModuleFileNameA(NULL, buffer, MAX_PATH);
 	std::string full_path = buffer;
-	if (full_path.empty()) std::cout << "full_path empty" << std::endl;
-/*	try {
-		if (full_path.empty()) {
-
-		}
-	} 
-	catch {
-
-	}*/
 	size_t position = full_path.find_last_of("\\/");
 	std::string dll_path = full_path.substr(0, position).append("\\plugins\\*.dll");
-	std::cout << dll_path << std::endl;
 	return dll_path;
 }
 

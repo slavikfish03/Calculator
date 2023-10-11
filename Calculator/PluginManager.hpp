@@ -14,7 +14,7 @@ typedef int (*CountOperands)();
 typedef int (*Priority)();
 
 
-using FunctionsMap = std::map<std::string, std::tuple<TypeFunc, int, int>>; //NameFunc
+using FunctionsMap = std::map<std::string, std::tuple<TypeFunc, int, int>>;
 
 class PluginManager {
 private:
@@ -26,5 +26,4 @@ public:
 	PluginManager();
 
 	FunctionsMap& GetAvailableFunctions();
-	void SetAvailableFunctions(FunctionsMap new_available_functions);
 };
