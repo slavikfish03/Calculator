@@ -42,8 +42,16 @@ std::string PluginManager::GetPathDLL() {
 	char buffer[MAX_PATH];
 	GetModuleFileNameA(NULL, buffer, MAX_PATH);
 	std::string full_path = buffer;
-	size_t position = full_path.find_last_of("\\/");
-	std::string dll_path = full_path.substr(0, position).append("\\plugins\\*.dll");
+	size_t help_position = full_path.find_last_of("\\/");
+	std::string help_dll_path = full_path.substr(0, help_position);  // we have risen to the level where the .exe file lies
+	size_t position = help_dll_path.find_last_of("\\/");
+
+	/*
+	we have risen to a higher level, where the "Release" or "Debug" folder lies 
+	(CMakeLists prescribes the creation of Release or Debug next to it, in the same place where the plugins folder lies)
+	*/
+
+	std::string dll_path = help_dll_path.substr(0, position).append("\\plugins\\*.dll");
 	return dll_path;
 }
 
