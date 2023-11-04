@@ -1,39 +1,16 @@
-/*
-класс  алькул€тор
-
-ѕол€:
-	ѕриватные:
-		PluginManager pluginManager - будет загружать dll дл€ калькул€тора
-
-ћетоды:
-	Solve - основной метод, вызыватс€ из main, осуществл€ет решение выражени€
-	ConvertToRPN(string& infix_expression) - метод преобразует из инфиксной нотации в обратную польскую, 
-	возвращает строку с польской нотацией
-	Calculate - вычислитель, вызываетс€ из Solve
-
-*/
 #pragma once
 
 #include "CoreCalculator.hpp"
+#include "PluginManager.hpp"
 
-#include <iostream>
-#include <string>
-#include <stack>
-#include <vector>
-#include <queue>
-#include <map>
-#include <regex>
-#include <exception>
-#include <sstream>
-#include <functional>
-#include <memory>
-#include <format>
+typedef double (*TypeFunc)(std::deque<double>);
+typedef std::string(*NameFunc)();
+using FunctionsMap = std::map<std::string, std::tuple<TypeFunc, int, int>>;
 
 class Calculator {
 private:
 	std::unique_ptr<CoreCalculator> _core_calculator;
-	//std::vector<std::string> _current_tokens;
-	//PluginManager plugin_manager;
+	std::unique_ptr<PluginManager> _plugin_manager;
 
 public:
 	Calculator();
@@ -43,10 +20,9 @@ public:
 	Calculator operator=(Calculator&&) = delete;
 	~Calculator();
 
-	std::vector<std::string> TokenizeExpression(std::string input_expression);
+	std::vector<std::string> TokenizeExpression(const std::string& input_expression);
 	std::vector<std::string> ConvertToStandartForm(const std::vector<std::string>& tokens);
 	std::stringstream ConvertToRPN(std::vector<std::string> tokens);
-
 
 	void Solve(std::string input_expression);
 };
